@@ -5,7 +5,7 @@ const form = document.querySelector('.feedback-form');
 form.addEventListener('submit', onFormSubmit);
 form.addEventListener('input', throttle(onFormInput, 500));
 const STORAGE_KEY = 'feedback-form-state';
-const formData = {};
+let formData = {};
 
 function onFormInput(e) {
   formData[e.target.name] = e.target.value;
@@ -20,6 +20,8 @@ function onFormSubmit(e) {
   console.log(JSON.parse(result));
 
   localStorage.removeItem(STORAGE_KEY);
+
+  formData = {};
 }
 
 savedInput();
@@ -27,9 +29,11 @@ function savedInput() {
   const savedMassage = localStorage.getItem(STORAGE_KEY);
   const parsedSavedMassage = JSON.parse(savedMassage);
   if (savedMassage) {
-    for (let key of form) {
-      key.value = parsedSavedMassage[key.name];
-      formData[key.name] = parsedSavedMassage[key.name];
-    }
+    Object.entries(parsedSavedMassage).forEach(([name, value]) => {
+      form.elements[name].value = value;
+      formData[name] = value;
+    });
   }
 }
+
+console.dir(form);
